@@ -4,7 +4,7 @@ Welcome to the frontend repository for the Sweet Shop Management System! This is
 This project was developed as part of the AI Kata, demonstrating modern frontend practices, secure integration with a Spring Boot backend, and the effective use of AI tools to accelerate UI/UX design.
 
 🌐 Live Demo
-The application is currently live! 👉 Access the Sweet Shop Here (Backend hosted on Render, Frontend hosted on Vercel)
+The application is currently live! https://sweetshop-frontend2.vercel.app/login
 
 📖 Project Overview
 The Sweet Shop Frontend serves as both the customer storefront and the administrative control panel. It connects to a RESTful backend to manage inventory, authentication, and sales.
