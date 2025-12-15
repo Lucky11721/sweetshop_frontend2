@@ -4,6 +4,24 @@ import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 
+// --- SMART CONFIGURATION ---
+// You can add new filters here without touching the logic code!
+const PRICE_FILTERS = [
+    { label: "All Prices", value: "all", type: "all" },
+    
+    // --- Budget Options ---
+    { label: "Budget Bites (Under $20)", value: "u20", type: "max", limit: 20 },
+    { label: "Under $50", value: "u50", type: "max", limit: 50 },
+    
+    // --- Specific Ranges (New!) ---
+    { label: "$50 - $100", value: "r50-100", type: "range", min: 50, max: 100 },
+    { label: "$100 - $200", value: "r100-200", type: "range", min: 100, max: 200 },
+    
+    // --- High End ---
+    { label: "Under $200", value: "u200", type: "max", limit: 200 },
+    { label: "Premium ($200 - $500)", value: "r200-500", type: "range", min: 200, max: 500 },
+    { label: "Luxury ($500+)", value: "o500", type: "min", limit: 500 }
+];
 const getImageForCategory = (category) => {
     const cat = (category || "").toLowerCase();
     if (cat.includes("chocolate") || cat.includes("truffle")) return "https://images.unsplash.com/photo-1606312619070-d48b4c652a52?w=600&q=80";
@@ -18,10 +36,13 @@ const Dashboard = () => {
     const [sweets, setSweets] = useState([]);
     const [filteredSweets, setFilteredSweets] = useState([]);
     
-    // --- NEW STATE VARIABLES ---
+    // --- STATE VARIABLES ---
     const [search, setSearch] = useState("");
     const [activeCategory, setActiveCategory] = useState("All");
-    const [priceFilter, setPriceFilter] = useState("All"); // New Price Filter State
+    
+    // Note: We initialize with the value 'all' to match our config array
+    const [priceFilterValue, setPriceFilterValue] = useState("all"); 
+    
     const [viewMode, setViewMode] = useState("grid");
     
     const [newSweet, setNewSweet] = useState({
@@ -35,16 +56,16 @@ const Dashboard = () => {
         loadSweets();
     }, []);
 
-    // --- UPDATED FILTER LOGIC ---
+    // --- FULLY DYNAMIC FILTER LOGIC ---
     useEffect(() => {
         let result = [...sweets];
 
-        // 1. Filter by Category Button
+        // 1. Filter by Category
         if (activeCategory !== "All") {
             result = result.filter(s => s.category.toLowerCase() === activeCategory.toLowerCase());
         }
 
-        // 2. Filter by Search Text (Name OR Category)
+        // 2. Filter by Search
         if (search) {
             const searchLower = search.toLowerCase();
             result = result.filter(s => 
@@ -53,17 +74,21 @@ const Dashboard = () => {
             );
         }
 
-        // 3. Filter by Price Range
-        if (priceFilter === "Under 50") {
-            result = result.filter(s => s.price < 50);
-        } else if (priceFilter === "Under 200") {
-            result = result.filter(s => s.price < 200);
-        } else if (priceFilter === "500+") {
-            result = result.filter(s => s.price >= 500);
+        // 3. Filter by Price (Dynamic Look-up)
+        const selectedFilter = PRICE_FILTERS.find(f => f.value === priceFilterValue);
+        
+        if (selectedFilter && selectedFilter.type !== 'all') {
+            if (selectedFilter.type === 'max') {
+                // Filter items LESS than the limit
+                result = result.filter(s => s.price < selectedFilter.limit);
+            } else if (selectedFilter.type === 'min') {
+                // Filter items GREATER OR EQUAL to the limit
+                result = result.filter(s => s.price >= selectedFilter.limit);
+            }
         }
 
         setFilteredSweets(result);
-    }, [sweets, activeCategory, search, priceFilter]);
+    }, [sweets, activeCategory, search, priceFilterValue]);
 
     const loadSweets = async () => {
         try {
@@ -169,7 +194,6 @@ const Dashboard = () => {
                     </div>
                 )}
 
-                {/* --- CONTROLS BAR (Updated with Price Filter) --- */}
                 <div className="controls-bar">
                     <div className="search-row">
                         <div className="search-wrapper">
@@ -182,17 +206,18 @@ const Dashboard = () => {
                             />
                         </div>
                         
-                        {/* New Price Filter Dropdown */}
+                        {/* --- DYNAMIC PRICE DROPDOWN --- */}
                         <div className="price-filter-wrapper">
                             <select 
                                 className="price-select" 
-                                value={priceFilter} 
-                                onChange={(e) => setPriceFilter(e.target.value)}
+                                value={priceFilterValue} 
+                                onChange={(e) => setPriceFilterValue(e.target.value)}
                             >
-                                <option value="All">All Prices</option>
-                                <option value="Under 50">Under $50</option>
-                                <option value="Under 200">Under $200</option>
-                                <option value="500+">$500+</option>
+                                {PRICE_FILTERS.map((filter) => (
+                                    <option key={filter.value} value={filter.value}>
+                                        {filter.label}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                     </div>

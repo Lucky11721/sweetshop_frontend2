@@ -181,9 +181,19 @@ h1, h2, h3 {
   align-items: center;
 }
 
+/* NEW: Search and Filter Row styling */
+.search-row {
+    display: flex;
+    gap: 15px;
+    width: 100%;
+    max-width: 700px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
 .search-wrapper {
-  width: 100%;
-  max-width: 500px;
+  flex-grow: 1;
+  min-width: 250px;
   position: relative;
 }
 
@@ -196,6 +206,33 @@ h1, h2, h3 {
   box-shadow: var(--shadow-soft);
   font-family: 'Poppins', sans-serif;
   font-size: 1rem;
+}
+
+/* NEW: Price Dropdown Styling */
+.price-filter-wrapper {
+    min-width: 160px;
+}
+
+.price-select {
+    width: 100%;
+    padding: 15px 20px;
+    border: none;
+    border-radius: var(--radius-pill);
+    background: var(--white);
+    box-shadow: var(--shadow-soft);
+    font-family: 'Poppins', sans-serif;
+    color: var(--text-soft);
+    font-size: 1rem;
+    cursor: pointer;
+    appearance: none; /* Removes default arrow */
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236D4C41%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px top 50%;
+    background-size: 12px auto;
+}
+
+.price-select:focus {
+    outline: 2px solid var(--accent-gold);
 }
 
 .category-nav {
@@ -433,3 +470,144 @@ h1, h2, h3 {
   font-size: 2rem;
   margin-bottom: 10px;
 }
+/* Container */
+.custom-dropdown-container {
+    position: relative; /* Essential for placing the menu */
+    width: 220px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* 1. The Button */
+.dropdown-trigger {
+    width: 100%;
+    padding: 10px 15px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    font-size: 14px;
+    color: #333;
+}
+
+.dropdown-trigger:hover {
+    border-color: #ff9f43; /* Or your theme color */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Rotating Arrow Animation */
+.dropdown-arrow {
+    font-size: 10px;
+    transition: transform 0.3s ease;
+    color: #888;
+}
+
+.dropdown-trigger.active .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+/* 2. The Menu (Hidden/Shown list) */
+.dropdown-menu {
+    position: absolute;
+    top: 110%; /* Pushes it just below the button */
+    left: 0;
+    width: 100%;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    border: 1px solid #eee;
+    z-index: 100; /* Ensures it floats above other content */
+    overflow: hidden;
+    animation: slideDown 0.2s ease-out;
+}
+
+/* 3. The Options */
+.dropdown-item {
+    padding: 12px 15px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #555;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f9f9f9;
+    transition: background 0.2s;
+}
+
+.dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.dropdown-item:hover {
+    background-color: #fff8f0; /* Light orange tint on hover */
+    color: #e67e22;
+}
+
+.dropdown-item.selected {
+    background-color: #fff0e0;
+    color: #d35400;
+    font-weight: 600;
+}
+
+.checkmark {
+    font-size: 12px;
+}
+
+/* Animation Keyframes */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
