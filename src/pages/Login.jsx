@@ -25,117 +25,108 @@ const Login = () => {
 
     return (
         <div style={styles.pageContainer}>
-            <style>{keyframes}</style>
-            
-            {/* Animated Background Elements */}
-            <div style={styles.floatingCandy1}>🍬</div>
-            <div style={styles.floatingCandy2}>🍭</div>
-            <div style={styles.floatingCandy3}>🍰</div>
-            <div style={styles.floatingCandy4}>🧁</div>
+            {/* Styles for Fonts and Responsiveness */}
+            <style>
+                {`
+                @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap');
+                
+                ::placeholder {
+                    color: #a89f91;
+                    opacity: 0.8;
+                }
 
-            <div className="container mt-5">
-                <div className="row justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
-                    
-                    {/* Welcome Section */}
-                    <div className="col-md-5 text-white text-center mb-4 mb-md-0" style={styles.welcomeSection}>
-                        <div style={styles.animatedTitle}>
-                            <h1 style={styles.brandName}>🍭 SweetShop</h1>
-                            <div style={styles.tagline}>Where Every Bite is Delight!</div>
-                        </div>
+                /* Responsive Logic */
+                @media (max-width: 768px) {
+                    .login-card {
+                        flex-direction: column !important;
+                        max-width: 400px !important;
+                    }
+                    .welcome-side {
+                        padding: 40px 30px !important;
+                        text-align: center;
+                    }
+                    .form-side {
+                        padding: 40px 30px !important;
+                    }
+                }
+                `}
+            </style>
+
+            <div className="login-card" style={styles.cardContainer}>
+                
+                {/* LEFT SIDE: Impressive Welcome Section */}
+                <div className="welcome-side" style={styles.welcomeSection}>
+                    <div style={styles.brandOverlay}>
+                        <h1 style={styles.welcomeTitle}>Welcome Back.</h1>
+                        <p style={styles.welcomeSubtitle}>
+                            Your curated selection of artisanal treats awaits. 
+                        </p>
+                        <div style={styles.separator}></div>
+                        <p style={styles.welcomeText}>
+                            Reconnect with the flavors you love. From our signature velvet cakes to hand-rolled truffles, every bite is crafted to perfection just for you.
+                        </p>
                         
-                        <div style={styles.welcomeContent}>
-                            <h3 style={styles.welcomeHeading}>Welcome Back!</h3>
-                            <p style={styles.welcomeText}>
-                                Your favorite delicious sweets are waiting for you! 
-                            </p>
-                            <p style={styles.welcomeSubtext}>
-                                Login to explore our mouthwatering collection of candies, 
-                                chocolates, and treats that will make your day sweeter! 🍫✨
-                            </p>
-                        </div>
-
-                        <div style={styles.features}>
-                            <div style={styles.featureItem}>🎂 Fresh Daily</div>
-                            <div style={styles.featureItem}>🍪 100+ Varieties</div>
-                            <div style={styles.featureItem}>🚚 Quick Delivery</div>
+                        <div style={styles.featureRow}>
+                            <span style={styles.featureBadge}>✨ Handcrafted Daily</span>
+                            <span style={styles.featureBadge}>🌿 Premium Ingredients</span>
                         </div>
                     </div>
+                </div>
 
-                    {/* Login Form Section */}
-                    <div className="col-md-5">
-                        <div style={styles.formCard} className="card shadow-lg">
-                            <div className="card-body p-5">
-                                <h2 className="text-center mb-4" style={styles.formTitle}>
-                                    Sign In
-                                </h2>
-                                
-                                {error && (
-                                    <div className="alert alert-danger" style={styles.errorAlert}>
-                                        <strong>Oops!</strong> {error}
-                                    </div>
-                                )}
-                                
-                                <form onSubmit={handleSubmit}>
-                                    <div className="mb-4">
-                                        <label style={styles.label}>Email Address</label>
-                                        <div style={styles.inputGroup}>
-                                            <span style={styles.inputIcon}>📧</span>
-                                            <input 
-                                                className="form-control" 
-                                                style={styles.input}
-                                                type="email" 
-                                                placeholder="Enter your email"
-                                                value={email} 
-                                                onChange={e => setEmail(e.target.value)} 
-                                                required 
-                                            />
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="mb-4">
-                                        <label style={styles.label}>Password</label>
-                                        <div style={styles.inputGroup}>
-                                            <span style={styles.inputIcon}>🔒</span>
-                                            <input 
-                                                className="form-control" 
-                                                style={styles.input}
-                                                type="password" 
-                                                placeholder="Enter your password"
-                                                value={password} 
-                                                onChange={e => setPassword(e.target.value)} 
-                                                required 
-                                            />
-                                        </div>
-                                    </div>
-                                    
-                                    <button 
-                                        className="btn w-100" 
-                                        style={isLoading ? styles.buttonLoading : styles.button}
-                                        disabled={isLoading}
-                                    >
-                                        {isLoading ? (
-                                            <>
-                                                <span className="spinner-border spinner-border-sm me-2"></span>
-                                                Signing In...
-                                            </>
-                                        ) : (
-                                            <>
-                                                Sign In 🍬
-                                            </>
-                                        )}
-                                    </button>
-                                </form>
-                                
-                                <div className="text-center mt-4">
-                                    <p style={styles.registerText}>
-                                        Don't have an account? 
-                                        <Link to="/register" style={styles.registerLink}>
-                                            Join the Sweet Family
-                                        </Link>
-                                    </p>
-                                </div>
-                            </div>
+                {/* RIGHT SIDE: Login Form */}
+                <div className="form-side" style={styles.formSection}>
+                    <div style={styles.formHeader}>
+                        <h2 style={styles.brandTitle}>THE SWEET SPOT</h2>
+                        <span style={styles.brandTagline}>FRESHLY BAKED, JUST FOR YOU</span>
+                    </div>
+
+                    <h3 style={styles.loginHeading}>Sign In to Your Account</h3>
+
+                    {error && (
+                        <div style={styles.errorAlert}>
+                            {error}
                         </div>
+                    )}
+
+                    <form onSubmit={handleSubmit} style={styles.form}>
+                        <div style={styles.inputGroup}>
+                            <label style={styles.label}>Email Address</label>
+                            <input 
+                                style={styles.input}
+                                type="email" 
+                                placeholder="name@example.com"
+                                value={email} 
+                                onChange={e => setEmail(e.target.value)} 
+                                required 
+                            />
+                        </div>
+
+                        <div style={styles.inputGroup}>
+                            <label style={styles.label}>Password</label>
+                            <input 
+                                style={styles.input}
+                                type="password" 
+                                placeholder="••••••••"
+                                value={password} 
+                                onChange={e => setPassword(e.target.value)} 
+                                required 
+                            />
+                        </div>
+                        
+                        <button 
+                            type="submit" 
+                            style={isLoading ? styles.buttonDisabled : styles.button}
+                            disabled={isLoading}
+                        >
+                            {isLoading ? "Authenticating..." : "Sign In"}
+                        </button>
+                    </form>
+
+                    <div style={styles.footer}>
+                        <p style={styles.footerText}>
+                            Not a member yet? 
+                            <Link to="/register" style={styles.link}> Join the Family</Link>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -143,208 +134,193 @@ const Login = () => {
     );
 };
 
-// Keyframe animations
-const keyframes = `
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    @keyframes float {
-        0%, 100% { transform: translateY(0px) rotate(0deg); }
-        50% { transform: translateY(-20px) rotate(10deg); }
-    }
-
-    @keyframes floatReverse {
-        0%, 100% { transform: translateY(0px) rotate(0deg); }
-        50% { transform: translateY(20px) rotate(-10deg); }
-    }
-
-    @keyframes pulse {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.05); }
-    }
-
-    @keyframes shimmer {
-        0% { background-position: -1000px 0; }
-        100% { background-position: 1000px 0; }
-    }
-`;
-
-// Styling
+// Styling Object
 const styles = {
     pageContainer: {
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
-        position: 'relative',
-        overflow: 'hidden',
-        paddingTop: '20px',
-        paddingBottom: '20px',
-    },
-    floatingCandy1: {
-        position: 'absolute',
-        fontSize: '60px',
-        top: '10%',
-        left: '10%',
-        animation: 'float 3s ease-in-out infinite',
-        opacity: 0.3,
-    },
-    floatingCandy2: {
-        position: 'absolute',
-        fontSize: '50px',
-        top: '60%',
-        right: '15%',
-        animation: 'floatReverse 4s ease-in-out infinite',
-        opacity: 0.3,
-    },
-    floatingCandy3: {
-        position: 'absolute',
-        fontSize: '55px',
-        bottom: '15%',
-        left: '15%',
-        animation: 'float 3.5s ease-in-out infinite',
-        opacity: 0.3,
-    },
-    floatingCandy4: {
-        position: 'absolute',
-        fontSize: '45px',
-        top: '30%',
-        right: '10%',
-        animation: 'floatReverse 3.2s ease-in-out infinite',
-        opacity: 0.3,
-    },
-    welcomeSection: {
-        animation: 'fadeInUp 0.8s ease-out',
-        padding: '30px',
-    },
-    animatedTitle: {
-        animation: 'pulse 2s ease-in-out infinite',
-        marginBottom: '30px',
-    },
-    brandName: {
-        fontSize: '3.5rem',
-        fontWeight: 'bold',
-        textShadow: '3px 3px 6px rgba(0,0,0,0.3)',
-        marginBottom: '10px',
-    },
-    tagline: {
-        fontSize: '1.2rem',
-        fontStyle: 'italic',
-        opacity: 0.9,
-        letterSpacing: '2px',
-    },
-    welcomeContent: {
-        marginTop: '40px',
-        marginBottom: '40px',
-    },
-    welcomeHeading: {
-        fontSize: '2rem',
-        marginBottom: '20px',
-        fontWeight: 'bold',
-    },
-    welcomeText: {
-        fontSize: '1.1rem',
-        marginBottom: '15px',
-        lineHeight: '1.6',
-    },
-    welcomeSubtext: {
-        fontSize: '1rem',
-        opacity: 0.9,
-        lineHeight: '1.6',
-    },
-    features: {
-        display: 'flex',
-        justifyContent: 'space-around',
-        marginTop: '30px',
-        flexWrap: 'wrap',
-    },
-    featureItem: {
-        backgroundColor: 'rgba(255,255,255,0.2)',
-        padding: '12px 20px',
-        borderRadius: '25px',
-        margin: '5px',
-        fontSize: '0.95rem',
-        backdropFilter: 'blur(10px)',
-        border: '1px solid rgba(255,255,255,0.3)',
-    },
-    formCard: {
-        animation: 'fadeInUp 1s ease-out',
-        borderRadius: '20px',
-        border: 'none',
-        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-        backdropFilter: 'blur(10px)',
-    },
-    formTitle: {
-        color: '#667eea',
-        fontWeight: 'bold',
-        fontSize: '2rem',
-    },
-    errorAlert: {
-        borderRadius: '10px',
-        animation: 'fadeInUp 0.3s ease-out',
-    },
-    label: {
-        fontWeight: '600',
-        color: '#555',
-        marginBottom: '8px',
-    },
-    inputGroup: {
-        position: 'relative',
+        backgroundColor: '#FAF7F2', // Cream
         display: 'flex',
         alignItems: 'center',
+        justifyContent: 'center',
+        fontFamily: "'Poppins', sans-serif",
+        padding: '20px',
     },
-    inputIcon: {
-        position: 'absolute',
-        left: '15px',
+    cardContainer: {
+        display: 'flex',
+        backgroundColor: '#FFFFFF',
+        width: '100%',
+        maxWidth: '1000px', // Wider card for split layout
+        minHeight: '600px',
+        borderRadius: '24px',
+        boxShadow: '0 20px 60px -15px rgba(74, 59, 50, 0.15)',
+        overflow: 'hidden',
+    },
+    
+    // --- LEFT SIDE (Welcome) ---
+    welcomeSection: {
+        flex: '1',
+        backgroundColor: '#4A3B32', // Dark Coffee
+        color: '#FAF7F2', // Cream text
+        padding: '60px 50px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        position: 'relative',
+        backgroundImage: 'radial-gradient(circle at top right, rgba(212, 163, 115, 0.1) 0%, transparent 60%)',
+    },
+    welcomeTitle: {
+        fontFamily: "'Playfair Display', serif",
+        fontSize: '3.5rem',
+        fontWeight: '700',
+        margin: '0 0 15px 0',
+        lineHeight: '1.1',
+    },
+    welcomeSubtitle: {
+        fontSize: '1.1rem',
+        opacity: '0.9',
+        fontWeight: '300',
+        marginBottom: '20px',
+    },
+    separator: {
+        width: '60px',
+        height: '2px',
+        backgroundColor: '#D4A373', // Gold
+        marginBottom: '25px',
+    },
+    welcomeText: {
+        fontFamily: "'Playfair Display', serif",
         fontSize: '1.2rem',
-        zIndex: 1,
+        fontStyle: 'italic',
+        lineHeight: '1.6',
+        opacity: '0.8',
+        marginBottom: '40px',
+    },
+    featureRow: {
+        display: 'flex',
+        gap: '15px',
+        flexWrap: 'wrap',
+    },
+    featureBadge: {
+        border: '1px solid rgba(250, 247, 242, 0.2)',
+        padding: '8px 16px',
+        borderRadius: '50px',
+        fontSize: '0.85rem',
+        backgroundColor: 'rgba(255,255,255,0.05)',
+    },
+
+    // --- RIGHT SIDE (Form) ---
+    formSection: {
+        flex: '1',
+        padding: '60px 50px',
+        backgroundColor: '#FFFFFF',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+    },
+    formHeader: {
+        textAlign: 'center',
+        marginBottom: '40px',
+    },
+    brandTitle: {
+        fontFamily: "'Playfair Display', serif",
+        fontSize: '1.5rem',
+        color: '#4A3B32',
+        letterSpacing: '2px',
+        margin: '0',
+        fontWeight: '700',
+    },
+    brandTagline: {
+        color: '#D4A373',
+        fontSize: '0.7rem',
+        textTransform: 'uppercase',
+        letterSpacing: '2px',
+        display: 'block',
+        marginTop: '5px',
+    },
+    loginHeading: {
+        fontFamily: "'Poppins', sans-serif",
+        color: '#6D4C41',
+        fontSize: '1.1rem',
+        marginBottom: '25px',
+        fontWeight: '500',
+        textAlign: 'left',
+    },
+    errorAlert: {
+        backgroundColor: '#FFF5F5',
+        color: '#C0392B',
+        padding: '12px',
+        borderRadius: '8px',
+        fontSize: '0.9rem',
+        marginBottom: '20px',
+        textAlign: 'center',
+        border: '1px solid #ffcccc',
+    },
+    form: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '20px',
+    },
+    inputGroup: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '8px',
+    },
+    label: {
+        fontSize: '0.85rem',
+        fontWeight: '600',
+        color: '#4A3B32',
+        letterSpacing: '0.5px',
     },
     input: {
-        paddingLeft: '45px',
-        height: '50px',
-        borderRadius: '10px',
-        border: '2px solid #e0e0e0',
-        transition: 'all 0.3s ease',
+        padding: '16px',
+        borderRadius: '12px',
+        border: '1px solid #E0E0E0',
         fontSize: '1rem',
+        color: '#4A3B32',
+        outline: 'none',
+        transition: 'all 0.3s',
+        backgroundColor: '#FAFAFA',
+        fontFamily: "'Poppins', sans-serif",
     },
     button: {
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        marginTop: '15px',
+        padding: '16px',
+        backgroundColor: '#4A3B32',
+        color: '#FFFFFF',
         border: 'none',
-        height: '50px',
-        borderRadius: '10px',
-        fontSize: '1.1rem',
-        fontWeight: 'bold',
-        color: 'white',
-        transition: 'all 0.3s ease',
-        boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)',
+        borderRadius: '50px',
+        fontSize: '1rem',
+        fontWeight: '600',
+        cursor: 'pointer',
+        transition: 'all 0.3s',
+        fontFamily: "'Poppins', sans-serif",
+        letterSpacing: '1px',
+        boxShadow: '0 5px 15px rgba(74, 59, 50, 0.2)',
     },
-    buttonLoading: {
-        background: 'linear-gradient(135deg, #9ca9ea 0%, #9b7bb2 100%)',
+    buttonDisabled: {
+        marginTop: '15px',
+        padding: '16px',
+        backgroundColor: '#9E9E9E',
+        color: '#FFFFFF',
         border: 'none',
-        height: '50px',
-        borderRadius: '10px',
-        fontSize: '1.1rem',
-        fontWeight: 'bold',
-        color: 'white',
+        borderRadius: '50px',
+        fontSize: '1rem',
         cursor: 'not-allowed',
     },
-    registerText: {
-        color: '#666',
-        marginBottom: '0',
+    footer: {
+        marginTop: '30px',
+        textAlign: 'center',
     },
-    registerLink: {
-        color: '#667eea',
-        fontWeight: 'bold',
+    footerText: {
+        color: '#8D6E63',
+        fontSize: '0.9rem',
+    },
+    link: {
+        color: '#D4A373',
+        fontWeight: '600',
         textDecoration: 'none',
-        marginLeft: '5px',
-        transition: 'color 0.3s ease',
-    },
+        borderBottom: '1px solid #D4A373',
+    }
 };
 
 export default Login;

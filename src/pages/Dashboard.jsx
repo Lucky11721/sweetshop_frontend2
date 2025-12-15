@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import { getAllSweets, purchaseSweet, deleteSweet, addSweet, restockSweet } from "../api/sweetApi";
 import { AuthContext } from "../context/AuthContext";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 
 const getImageForCategory = (category) => {
@@ -17,10 +17,13 @@ const getImageForCategory = (category) => {
 const Dashboard = () => {
     const [sweets, setSweets] = useState([]);
     const [filteredSweets, setFilteredSweets] = useState([]);
+    
+    // --- NEW STATE VARIABLES ---
     const [search, setSearch] = useState("");
     const [activeCategory, setActiveCategory] = useState("All");
+    const [priceFilter, setPriceFilter] = useState("All"); // New Price Filter State
+    const [viewMode, setViewMode] = useState("grid");
     
-    // Add Sweet Form State
     const [newSweet, setNewSweet] = useState({
         name: "", category: "", price: "", quantity: "", imageUrl: ""
     });
@@ -32,16 +35,35 @@ const Dashboard = () => {
         loadSweets();
     }, []);
 
+    // --- UPDATED FILTER LOGIC ---
     useEffect(() => {
         let result = [...sweets];
+
+        // 1. Filter by Category Button
         if (activeCategory !== "All") {
             result = result.filter(s => s.category.toLowerCase() === activeCategory.toLowerCase());
         }
+
+        // 2. Filter by Search Text (Name OR Category)
         if (search) {
-            result = result.filter(s => s.name.toLowerCase().includes(search.toLowerCase()));
+            const searchLower = search.toLowerCase();
+            result = result.filter(s => 
+                s.name.toLowerCase().includes(searchLower) || 
+                s.category.toLowerCase().includes(searchLower)
+            );
         }
+
+        // 3. Filter by Price Range
+        if (priceFilter === "Under 50") {
+            result = result.filter(s => s.price < 50);
+        } else if (priceFilter === "Under 200") {
+            result = result.filter(s => s.price < 200);
+        } else if (priceFilter === "500+") {
+            result = result.filter(s => s.price >= 500);
+        }
+
         setFilteredSweets(result);
-    }, [sweets, activeCategory, search]);
+    }, [sweets, activeCategory, search, priceFilter]);
 
     const loadSweets = async () => {
         try {
@@ -77,10 +99,10 @@ const Dashboard = () => {
     };
 
     const handleDelete = async (id, name) => {
-        if (window.confirm(`Are you sure you want to delete "${name}"? This cannot be undone.`)) {
+        if (window.confirm(`Are you sure you want to delete "${name}"?`)) {
             try {
                 await deleteSweet(id);
-                loadSweets(); 
+                loadSweets();
             } catch (error) {
                 alert("Failed to delete. " + (error.response?.data?.message || "Please try again."));
             }
@@ -116,182 +138,171 @@ const Dashboard = () => {
     const categories = ["All", ...new Set(sweets.map(s => s.category))];
 
     return (
-        <div className="dashboard-wrapper">
-            <div className="chocolate-drip-top"></div>
-            
-            <nav className="navbar-chocolate">
-                <div className="container">
-                    <div className="d-flex justify-content-between align-items-center w-100">
-                        <div className="d-flex align-items-center gap-3">
-                            <span className="chocolate-icon">🍫</span>
-                            <h1 className="brand-title mb-0">Sweet Inventory</h1>
-                        </div>
-                        
-                        <div className="d-flex align-items-center gap-3">
-                            
-                            {/* User Badge Section */}
-                            <div className="user-menu-container">
-                                <div className="user-badge-wrapper" title={`Logged in as ${user?.username}`}>
-                                    <div className="user-badge">
-                                        {role === 'ADMIN' ? 'A' : 'U'}
-                                    </div>
-                                    <span className="user-name-nav">{user?.username || 'User'}</span>
-                                </div>
-                                
-                                {/* 🚪 Logout Button beside logo */}
-                                <button className="btn-logout" onClick={handleLogout} title="Logout">
-                                    🚪
-                                </button>
-                            </div>
-                        </div>
+        <div className="dashboard-container">
+            <header className="bakery-header">
+                <div className="content-wrapper header-inner">
+                    <div className="brand-section">
+                        <h1 className="brand-logo">The Sweet Spot</h1>
+                        <span className="brand-tagline">Freshly Baked, Just for You</span>
+                    </div>
+                    <div className="user-controls">
+                        {role === 'ADMIN' && <span className="admin-badge">Admin Mode</span>}
+                        <span className="user-welcome">Hello, <b>{user?.username}</b></span>
+                        <button className="btn-logout" onClick={handleLogout}>Logout</button>
                     </div>
                 </div>
-            </nav>
+            </header>
 
-            <div className="container mt-4">
-                {/* Add Sweet Form (Admin Only) */}
+            <div className="content-wrapper">
+                
                 {role === 'ADMIN' && (
-                    <div className="golden-form-card">
-                        <h5 className="form-title">🍰 Add New Item</h5>
-                        <form onSubmit={handleAddSweet}>
-                            <div className="row g-3 mb-3">
-                                <div className="col-md-6">
-                                    <input type="text" className="chocolate-input" placeholder="Sweet Name"
-                                        value={newSweet.name} onChange={(e) => setNewSweet({...newSweet, name: e.target.value})} required />
-                                </div>
-                                <div className="col-md-6">
-                                    <input type="text" className="chocolate-input" placeholder="Category"
-                                        value={newSweet.category} onChange={(e) => setNewSweet({...newSweet, category: e.target.value})} required />
-                                </div>
-                            </div>
-                            <div className="row g-3 mb-3">
-                                <div className="col-md-6">
-                                    <input type="number" step="0.01" min="0" className="chocolate-input" placeholder="Price ($)"
-                                        value={newSweet.price} onChange={(e) => setNewSweet({...newSweet, price: e.target.value})} required />
-                                </div>
-                                <div className="col-md-6">
-                                    <input type="number" min="0" className="chocolate-input" placeholder="Quantity"
-                                        value={newSweet.quantity} onChange={(e) => setNewSweet({...newSweet, quantity: e.target.value})} required />
-                                </div>
-                            </div>
-                            <div className="row g-3 mb-3">
-                                <div className="col-12">
-                                    <input type="url" className="chocolate-input" placeholder="Image URL (optional)"
-                                        value={newSweet.imageUrl} onChange={(e) => setNewSweet({...newSweet, imageUrl: e.target.value})} />
-                                </div>
-                            </div>
-                            <button type="submit" className="btn-add-sweet">✨ Add Sweet</button>
+                    <div className="admin-panel">
+                        <h3 className="section-title">✨ Add New Delight</h3>
+                        <form onSubmit={handleAddSweet} className="add-sweet-form">
+                            <div className="form-group"><input type="text" placeholder="Sweet Name" value={newSweet.name} onChange={(e) => setNewSweet({ ...newSweet, name: e.target.value })} required /></div>
+                            <div className="form-group"><input type="text" placeholder="Category (e.g., Cake)" value={newSweet.category} onChange={(e) => setNewSweet({ ...newSweet, category: e.target.value })} required /></div>
+                            <div className="form-group"><input type="number" step="0.01" placeholder="Price ($)" value={newSweet.price} onChange={(e) => setNewSweet({ ...newSweet, price: e.target.value })} required /></div>
+                            <div className="form-group"><input type="number" placeholder="Quantity" value={newSweet.quantity} onChange={(e) => setNewSweet({ ...newSweet, quantity: e.target.value })} required /></div>
+                            <div className="form-group"><input type="url" placeholder="Image URL (Optional)" value={newSweet.imageUrl} onChange={(e) => setNewSweet({ ...newSweet, imageUrl: e.target.value })} /></div>
+                            <button type="submit" className="btn-submit">+ Add to Menu</button>
                         </form>
                     </div>
                 )}
 
-                {/* Search & Filter */}
-                <div className="controls-section">
-                    <div className="row g-3 align-items-center">
-                        <div className="col-md-5">
-                            <div className="search-bar">
-                                <span className="search-icon">🔍</span>
-                                <input type="text" className="search-input" placeholder="Search sweets..." 
-                                    value={search} onChange={(e) => setSearch(e.target.value)} />
-                            </div>
+                {/* --- CONTROLS BAR (Updated with Price Filter) --- */}
+                <div className="controls-bar">
+                    <div className="search-row">
+                        <div className="search-wrapper">
+                            <input 
+                                type="text" 
+                                className="search-input" 
+                                placeholder="Search by name or category..." 
+                                value={search} 
+                                onChange={(e) => setSearch(e.target.value)} 
+                            />
                         </div>
-                        <div className="col-md-7">
-                            <div className="category-chips">
-                                {categories.map(cat => (
-                                    <button key={cat} className={`chip-btn ${activeCategory === cat ? 'active' : ''}`}
-                                        onClick={() => setActiveCategory(cat)}>
-                                        {cat}
-                                    </button>
-                                ))}
-                            </div>
+                        
+                        {/* New Price Filter Dropdown */}
+                        <div className="price-filter-wrapper">
+                            <select 
+                                className="price-select" 
+                                value={priceFilter} 
+                                onChange={(e) => setPriceFilter(e.target.value)}
+                            >
+                                <option value="All">All Prices</option>
+                                <option value="Under 50">Under $50</option>
+                                <option value="Under 200">Under $200</option>
+                                <option value="500+">$500+</option>
+                            </select>
                         </div>
+                    </div>
+                    
+                    <div className="category-nav">
+                        {categories.map(cat => (
+                            <button key={cat} className={`cat-btn ${activeCategory === cat ? 'active' : ''}`} onClick={() => setActiveCategory(cat)}>
+                                {cat}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="view-toggles">
+                        <button className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`} onClick={() => setViewMode('grid')} title="Grid View">▦</button>
+                        <button className={`view-btn ${viewMode === 'table' ? 'active' : ''}`} onClick={() => setViewMode('table')} title="List View">☰</button>
                     </div>
                 </div>
 
-                {/* Header Row */}
-                <div className="inventory-header">
-                    <div className="row text-center fw-bold align-items-center">
-                        <div className="col-1">#</div>
-                        <div className="col-2">Image</div>
-                        <div className="col-2">Name</div>
-                        <div className="col-2">Category</div>
-                        <div className="col-1">Price</div>
-                        <div className="col-1">Stock</div>
-                        <div className="col-3">Actions</div>
-                    </div>
-                </div>
-
-                {/* Sweets List */}
-                <div className="wooden-shelf-container">
-                    {filteredSweets.map((sweet, index) => (
-                        <div key={sweet.id} className="shelf-row">
-                            <div className="row align-items-center text-center">
-                                <div className="col-1">
-                                    <span className="item-id">{index + 1}</span>
-                                </div>
-                                <div className="col-2 d-flex justify-content-center">
+                {viewMode === 'grid' && (
+                    <div className="sweets-grid">
+                        {filteredSweets.map((sweet) => (
+                            <div key={sweet.id} className="sweet-card">
+                                <div className="card-img-wrapper">
                                     <img 
                                         src={sweet.imageUrl || getImageForCategory(sweet.category)} 
                                         alt={sweet.name} 
-                                        className="product-img-small"
-                                        onError={(e) => { 
+                                        className="card-img"
+                                        onError={(e) => {
                                             if (e.target.src !== getImageForCategory(sweet.category)) {
                                                 e.target.src = getImageForCategory(sweet.category);
                                             }
                                         }}
                                     />
-                                </div>
-                                <div className="col-2">
-                                    <span className="product-name-small">{sweet.name}</span>
-                                </div>
-                                <div className="col-2">
-                                    <span className="category-badge">{sweet.category}</span>
-                                </div>
-                                <div className="col-1">
-                                    <span className="price-text">${sweet.price.toFixed(2)}</span>
-                                </div>
-                                <div className="col-1">
-                                    <span className={`stock-badge ${sweet.quantity < 5 ? 'low' : 'ok'}`}>
-                                        {sweet.quantity}
+                                    <span className={`stock-tag ${sweet.quantity < 5 ? 'low' : 'ok'}`}>
+                                        {sweet.quantity} Left
                                     </span>
                                 </div>
-                                <div className="col-3">
-                                    <div className="action-buttons">
-                                        {role === 'ADMIN' && (
-                                            <button className="btn-restock" onClick={() => handleRestock(sweet)} title="Add Stock">
-                                                📦 Restock
-                                            </button>
-                                        )}
-                                        <button 
-                                            className="btn-purchase" 
-                                            disabled={sweet.quantity < 1} 
-                                            onClick={() => handlePurchase(sweet.id, sweet.name)}
-                                            title="Buy Item">
-                                            {sweet.quantity < 1 ? "Sold Out" : "🛒 Buy"}
+                                <div className="card-info">
+                                    <span className="sweet-category">{sweet.category}</span>
+                                    <h3 className="sweet-name">{sweet.name}</h3>
+                                    <div className="price-row">
+                                        <span className="price">${sweet.price.toFixed(2)}</span>
+                                    </div>
+                                    <div className="card-actions">
+                                        <button className="btn-buy" disabled={sweet.quantity < 1} onClick={() => handlePurchase(sweet.id, sweet.name)}>
+                                            {sweet.quantity < 1 ? 'Sold Out' : 'Order Now'}
                                         </button>
+                                        
                                         {role === 'ADMIN' && (
-                                            <button className="btn-delete" onClick={() => handleDelete(sweet.id, sweet.name)} title="Delete">
-                                                🗑️
-                                            </button>
+                                            <div className="admin-actions">
+                                                <button className="icon-btn" onClick={() => handleRestock(sweet)} title="Restock">📦</button>
+                                                <button className="icon-btn" onClick={() => handleDelete(sweet.id, sweet.name)} title="Delete" style={{color: '#D32F2F'}}>🗑️</button>
+                                            </div>
                                         )}
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
+                )}
 
-                    {filteredSweets.length === 0 && (
-                        <div className="empty-state">
-                            <h3>🍽️ No sweets found</h3>
-                            <p>Try adjusting your search or filters</p>
-                        </div>
-                    )}
-                </div>
+                {viewMode === 'table' && (
+                    <div className="table-wrapper">
+                        <table className="elegant-table">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Stock</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredSweets.map((sweet) => (
+                                    <tr key={sweet.id}>
+                                        <td style={{display: 'flex', alignItems: 'center', gap: '15px'}}>
+                                            <img src={sweet.imageUrl || getImageForCategory(sweet.category)} className="mini-img" alt="" />
+                                            <strong>{sweet.name}</strong>
+                                        </td>
+                                        <td>{sweet.category}</td>
+                                        <td>${sweet.price.toFixed(2)}</td>
+                                        <td style={{color: sweet.quantity < 5 ? 'red' : 'green'}}>{sweet.quantity} units</td>
+                                        <td>
+                                            <div style={{display: 'flex', gap: '10px'}}>
+                                                <button className="btn-buy" style={{padding: '5px 15px', width: 'auto'}} disabled={sweet.quantity < 1} onClick={() => handlePurchase(sweet.id, sweet.name)}>Buy</button>
+                                                {role === 'ADMIN' && (
+                                                    <>
+                                                        <button className="icon-btn" onClick={() => handleRestock(sweet)}>📦</button>
+                                                        <button className="icon-btn" onClick={() => handleDelete(sweet.id, sweet.name)} style={{color: '#D32F2F'}}>🗑️</button>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+
+                {filteredSweets.length === 0 && (
+                    <div className="empty-state">
+                        <h3>No sweets found</h3>
+                        <p>Our shelves are empty for this selection.</p>
+                    </div>
+                )}
             </div>
         </div>
     );
 };
 
 export default Dashboard;
-
-
